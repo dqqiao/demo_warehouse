@@ -1,5 +1,6 @@
 package com.nov.emergency;
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.nov.util.HttpClientUtil;
 
@@ -21,18 +22,21 @@ public class UnitMsg {
         httpClientUtil = new HttpClientUtil();
     }
 
-    public void SearchUnit(String unitName){
-        String httpOrgCreateTest = url;
+    public JSONArray searchUnit(String unitName){
+        String httpPostUrl = url;
         String searchParamsStr = "{\"riskSourceRadio\":\"0\",\"industryRadio\":\"0\",\"exSupervisionRadio\":\"0\",\"supervisionRadio\":\"0\",\"realExistRadio\":\"0\",\"area\":\"\",\"street\":\"\",\"unit_name\":\"\",\"isSafety\":\"0\"}";
         JSONObject searchParamsJo = JSONObject.parseObject(searchParamsStr);
         searchParamsJo.put("unit_name",unitName);
-        String httpOrgCreateTestRtn = httpClientUtil.doPost(httpOrgCreateTest,searchParamsJo.toJSONString(),charset);
-        System.out.println(httpOrgCreateTestRtn);
+        String httpPostUnitRtn = httpClientUtil.doPost(httpPostUrl,searchParamsJo.toJSONString(),charset);
+        JSONObject unitDataJo = JSONObject.parseObject(httpPostUnitRtn);
+        JSONArray unitArray = unitDataJo.getJSONArray("items");
+        return unitArray.size() > 0 ? unitArray : null;
     }
 
-
-
-
+    public static void main(String[] args) {
+        UnitMsg unitMsg = new UnitMsg();
+        unitMsg.searchUnit("肯德基");
+    }
 
 
 }
